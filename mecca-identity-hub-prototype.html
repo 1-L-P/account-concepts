@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MECCA “Account Hub” — App concept directions (A / B / C / D)</title>
+<style>
+:root{
+ --black:#000;--white:#fff;--g500:#666;--g400:#999;--g300:#bababa;--g200:#e8e8e8;--g100:#f7f7f7;
+ --pink:#ef60a3;--red:#cc1426;--purple:#56223d;--burgundy:#541027;--lightpink:#f6a8cc;--lavender:#d6b8e4;--orange:#f69170;--memored:#d64351;--blush:#ecbaa8;--lightblush:#fff0eb;
+ --gold-d:#ca9c3c;--gold-m:#debc66;--gold-l:#eed688;--pos:#244f09;--posbg:#eaefe7;--neg:#ae2f2f;--negbg:#fcecec;
+ --r2:2px;--r4:4px;--r8:8px;--r50:50px;
+ --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;
+ --serif:"ABC Arizona Serif",Georgia,"Times New Roman",serif;
+ --sh-bottom:0 4px 10px 0 rgba(0,0,0,.08);--sh-top:0 -3px 10px 0 rgba(0,0,0,.06);--sh-outer:0 0 20px 0 rgba(0,0,0,.12);
+ --ease:cubic-bezier(.25,.1,.25,1);--spring:cubic-bezier(.175,.885,.32,1.275);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+body{font-family:var(--font);background:#ededee;color:var(--black);line-height:1.4;padding:40px 24px 90px;}
+.wrap{max-width:1240px;margin:0 auto;}
+.masthead{margin-bottom:24px;}
+.masthead .kicker{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--g500);font-weight:600;}
+.masthead h1{font-size:34px;line-height:1.08;font-weight:600;margin:8px 0 10px;letter-spacing:-.5px;}
+.masthead p{font-size:15px;color:var(--g500);max-width:820px;}
+.swatches{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;align-items:center;}
+.swatches span{font-size:11px;color:var(--g500);margin-right:6px;}
+.sw{width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,0,0,.08);}
+.segmented{position:sticky;top:0;z-index:90;display:flex;gap:6px;background:#ededee;padding:16px 0 12px;margin-bottom:6px;border-bottom:1px solid var(--g200);}
+.seg{flex:0 0 auto;padding:11px 20px;border-radius:var(--r50);border:1px solid var(--g300);background:var(--white);font:inherit;font-size:14px;font-weight:600;color:var(--black);cursor:pointer;transition:all .2s var(--ease);}
+.seg small{display:block;font-weight:400;font-size:11px;color:var(--g500);}
+.seg.on{background:var(--black);color:var(--white);border-color:var(--black);}
+.seg.on small{color:rgba(255,255,255,.7);}
+.optpane{display:none;}
+.optpane.on{display:block;animation:fade .35s var(--ease);}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.opthead{margin:24px 0 6px;}
+.opthead h2{font-size:22px;font-weight:600;letter-spacing:-.3px;}
+.opthead .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:6px;}
+.opthead p{font-size:14px;color:var(--g500);max-width:820px;margin-top:4px;}
+.rationale{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px;}
+.rationale div{flex:1 1 220px;background:var(--white);border:1px solid var(--g200);border-radius:var(--r8);padding:13px 15px;}
+.rationale h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:5px;}
+.rationale p{font-size:13px;color:var(--black);}
+.stage{display:flex;gap:34px;flex-wrap:wrap;margin-top:22px;}
+.device{display:flex;flex-direction:column;align-items:center;gap:12px;width:417px;}
+.cap{font-size:12.5px;color:var(--g500);text-align:center;max-width:393px;}
+.cap b{color:var(--black);}
+/* iPhone 15 Pro — 393×852pt logical */
+.frame{position:relative;width:417px;height:876px;background:#0b0b0c;border-radius:56px;padding:11px;box-shadow:var(--sh-outer),0 0 0 2px #2a2a2c,inset 0 0 0 2px #3a3a3c;flex:0 0 auto;}
+.screen{position:relative;width:395px;height:854px;background:var(--white);border-radius:46px;overflow:hidden;display:flex;flex-direction:column;}
+.island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:70;}
+.island::after{content:"";position:absolute;right:11px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:#0d1b2a;box-shadow:inset 0 0 2px #1c3a5e;}
+.statusbar{flex:0 0 56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 9px;font-size:15px;font-weight:600;letter-spacing:.2px;}
+.sb-r{display:flex;align-items:center;gap:6px;}
+.ic-st{width:17px;height:13px;fill:var(--black);}
+.ic-bt{width:25px;height:13px;fill:none;stroke:var(--black);}
+.appscroll{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none;}
+.appscroll::-webkit-scrollbar{display:none;}
+.homebar{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:140px;height:5px;border-radius:3px;background:#000;opacity:.92;z-index:65;}
+/* icons */
+.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;display:block;flex:0 0 auto;}
+.ic.sm{width:16px;height:16px;}
+.ic.fill{fill:currentColor;stroke:none;}
+/* app bars */
+.appbar{display:flex;align-items:center;gap:8px;height:52px;padding:0 14px;border-bottom:1px solid var(--g200);position:relative;flex:0 0 auto;background:var(--white);}
+.appbar .ttl{position:absolute;left:50%;transform:translateX(-50%);font-size:20px;font-weight:500;}
+.appbar .ab-ic{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:var(--black);cursor:pointer;}
+.appbar .sp{flex:1;}
+.sec{padding:18px 16px;}
+.sec.grey{background:var(--g100);}
+.eyebrow{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--g500);font-weight:600;}
+.muted{color:var(--g500);}
+h3.t2{font-size:20px;font-weight:500;}
+h4.t3{font-size:18px;font-weight:500;}
+.subhead{display:flex;align-items:center;margin:0 0 12px;}
+.subhead h3{font-size:20px;font-weight:500;}
+.subhead .lnk{margin-left:auto;}
+.lnk{font-size:13px;font-weight:500;text-decoration:underline;color:var(--black);cursor:pointer;}
+/* identity card */
+.idcard{background:var(--g100);border:1px solid var(--g200);border-radius:var(--r8);padding:18px;}
+.idrow{display:flex;align-items:center;gap:14px;}
+.avatar{width:56px;height:56px;border-radius:var(--r50);background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:#fff;flex:0 0 56px;}
+.avatar.sm{width:42px;height:42px;flex-basis:42px;font-size:17px;}
+.idname{font-size:19px;font-weight:600;}
+.idtier{font-size:12px;color:var(--red);letter-spacing:.4px;margin-top:2px;text-transform:uppercase;font-weight:600;}
+.ring{margin-left:auto;width:50px;height:50px;border-radius:var(--r50);background:conic-gradient(var(--pink) 0 40%,var(--g200) 40 100%);display:flex;align-items:center;justify-content:center;flex:0 0 50px;}
+.ring i{width:39px;height:39px;border-radius:var(--r50);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:11px;font-style:normal;font-weight:700;}
+.progress{margin-top:15px;}
+.plab{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:600;color:var(--g500);margin-bottom:6px;}
+.track{height:8px;border-radius:var(--r50);background:var(--g200);overflow:hidden;}
+.fill{height:100%;border-radius:var(--r50);background:linear-gradient(90deg,var(--pink),var(--red));}
+.phint{font-size:12px;color:var(--g500);margin-top:8px;}
+/* tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tile{background:var(--white);border:1px solid var(--g200);border-radius:var(--r8);padding:14px;min-height:98px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:transform .15s var(--ease),box-shadow .15s var(--ease);}
+.tile:active{transform:scale(.98);box-shadow:var(--sh-bottom);}
+.tile .tt{font-size:14px;font-weight:600;margin-top:auto;}
+.tile .ss{font-size:11px;color:var(--g500);}
+.tile.pink{background:var(--lightblush);border-color:var(--blush);}
+.tile .pts{font-size:22px;font-weight:700;}
+/* fit card */
+.fitentry{display:flex;align-items:center;gap:13px;background:var(--lightblush);border:1px solid var(--blush);border-radius:var(--r8);padding:14px;cursor:pointer;}
+.fitentry .ci{width:40px;height:40px;border-radius:var(--r50);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--pink);flex:0 0 40px;}
+.fitentry .ft{flex:1;}
+.fitentry .ft b{font-size:14px;font-weight:600;}
+.fitentry .ft span{display:block;font-size:11.5px;color:var(--g500);margin-top:1px;}
+/* list rows */
+.list{margin-top:6px;}
+.lrow{display:flex;align-items:center;gap:13px;height:56px;border-bottom:1px solid var(--g200);cursor:pointer;color:var(--black);}
+.lrow .lb{font-size:16px;flex:1;}
+.lrow .ch{color:var(--g400);}
+.lrow.noborder{border-bottom:none;}
+/* buttons */
+.btn{display:block;width:100%;height:56px;border:none;border-radius:var(--r4);background:var(--black);color:#fff;font:inherit;font-size:16px;font-weight:500;cursor:pointer;transition:transform .12s var(--ease),filter .12s;}
+.btn:active{transform:scale(.98);filter:brightness(.92);}
+.btn.inv{background:#fff;color:#000;border:1px solid #000;}
+.pillbtn{display:inline-flex;align-items:center;gap:8px;background:var(--black);color:#fff;border:none;padding:13px 20px;border-radius:var(--r50);font:inherit;font-size:14px;font-weight:600;box-shadow:var(--sh-bottom);cursor:pointer;}
+.float{position:absolute;right:16px;bottom:84px;z-index:20;}
+.floatlight{background:#fff;color:#000;border:1px solid var(--g200);}
+/* search + hero */
+.searchwrap{position:absolute;top:8px;left:14px;right:14px;z-index:15;display:flex;gap:8px;}
+.searchbar{flex:1;height:48px;background:#fff;border-radius:var(--r8);display:flex;align-items:center;gap:9px;padding:0 14px;box-shadow:var(--sh-outer);}
+.searchbar input{border:none;outline:none;font:inherit;font-size:14px;flex:1;color:var(--black);background:transparent;}
+.searchbar input::placeholder{color:var(--g400);}
+.scan{height:48px;padding:0 14px;background:var(--black);color:#fff;border:none;border-radius:var(--r8);display:flex;align-items:center;gap:7px;font:inherit;font-size:12px;font-weight:600;box-shadow:var(--sh-outer);cursor:pointer;}
+.hero{position:relative;height:330px;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 18px 26px;color:#fff;}
+.hero .ovl-h{font-size:30px;line-height:1.05;font-weight:600;letter-spacing:.5px;text-transform:uppercase;max-width:240px;}
+.hero .ovl-s{font-size:13px;margin-top:8px;opacity:.95;}
+.hero .shopnow{margin-top:14px;align-self:flex-start;background:#fff;color:#000;border:none;border-radius:var(--r4);padding:11px 20px;font:inherit;font-weight:500;cursor:pointer;}
+.hg1{background:linear-gradient(135deg,#56223d,#cc1426);}
+.hg2{background:linear-gradient(135deg,#ef60a3,#f69170);}
+.hg3{background:linear-gradient(135deg,#7f6226,#debc66);}
+/* carousel */
+.car{position:relative;}
+.car-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px;}
+.car-track::-webkit-scrollbar{display:none;}
+.car-slide{scroll-snap-align:center;flex:0 0 100%;}
+.car.peek .car-slide{flex-basis:78%;}
+.car-dots{display:flex;gap:6px;justify-content:center;margin-top:12px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g300);border:none;padding:0;cursor:pointer;transition:background .2s,width .2s;}
+.dot.on{background:var(--black);width:18px;border-radius:4px;}
+.dot.light{background:rgba(255,255,255,.5);}
+.dot.light.on{background:#fff;}
+.herodots{position:absolute;bottom:14px;left:0;right:0;z-index:6;}
+/* tier card */
+.tier{border-radius:var(--r8);overflow:hidden;border:1px solid var(--g200);background:#fff;}
+.tier .im{height:150px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;}
+.tier .im .cur{font-size:26px;font-weight:600;}
+.tier .im .mem{font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-top:2px;opacity:.9;}
+.tier .bd{padding:15px;}
+.tier .bd .nm{font-size:18px;font-weight:500;}
+.tier .bd .sp{font-size:13px;color:var(--g500);margin:4px 0 8px;}
+.lv0{background:linear-gradient(135deg,#999,#666);}
+.lv1{background:linear-gradient(135deg,#f69170,#cc1426);}
+.lv2{background:linear-gradient(135deg,#ef60a3,#56223d);}
+.lv3{background:linear-gradient(135deg,#d6b8e4,#56223d);}
+.lv4{background:linear-gradient(135deg,#541027,#000);}
+/* product card */
+.prow{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.prow::-webkit-scrollbar{display:none;}
+.pcard{flex:0 0 140px;}
+.pcard .pim{height:140px;background:var(--g100);position:relative;}
+.pcard .heart{position:absolute;top:7px;right:7px;color:var(--black);cursor:pointer;}
+.pcard .qadd{position:absolute;bottom:7px;right:7px;background:#fff;border-radius:var(--r50);width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-bottom);cursor:pointer;color:var(--black);}
+.pcard .badge{position:absolute;top:7px;left:7px;}
+.badge{font-size:9px;letter-spacing:.8px;text-transform:uppercase;font-weight:700;color:var(--black);background:#fff;border:1px solid var(--black);padding:3px 6px;}
+.pcard .br{font-size:12px;font-weight:600;margin-top:7px;}
+.pcard .nm{font-size:12px;color:var(--black);}
+.pcard .pr{font-size:13px;font-weight:600;margin-top:3px;}
+.stars{display:flex;align-items:center;gap:1px;color:var(--black);margin-top:3px;}
+.stars .ic{width:13px;height:13px;}
+.stars span{font-size:11px;color:var(--g500);text-decoration:underline;margin-left:4px;}
+/* wallet chip */
+.wallet{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--g200);padding:7px 13px;border-radius:var(--r50);font-size:12px;font-weight:600;}
+.wallet .pk{color:var(--red);}
+.wallet .dot2{width:8px;height:8px;border-radius:50%;background:var(--pink);}
+/* accordion */
+.acc{border:1px solid var(--g200);border-radius:var(--r8);overflow:hidden;margin-top:10px;background:#fff;}
+.acc-h{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;font-size:14px;font-weight:600;}
+.acc-h .ch{margin-left:auto;color:var(--g500);transition:transform .3s var(--ease);}
+.acc.open .acc-h .ch{transform:rotate(180deg);}
+.acc-b{max-height:0;overflow:hidden;transition:max-height .35s var(--ease);}
+.acc.open .acc-b{max-height:520px;}
+.acc-bi{padding:0 14px 14px;font-size:13px;color:var(--g500);}
+.acc-bi .row{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--g100);color:var(--black);}
+/* fit module */
+.fitmod{border:1px solid var(--g200);border-radius:var(--r8);overflow:hidden;margin:0 16px;}
+.fitmod .fh{background:var(--lightblush);padding:13px 14px;display:flex;align-items:center;gap:10px;}
+.fitmod .fh .ci{color:var(--pink);}
+.fitmod .fh b{font-size:14px;}
+.fitmod .fb{padding:14px;}
+.chips{display:flex;gap:7px;flex-wrap:wrap;}
+.chip{font-size:12px;font-weight:600;padding:7px 12px;border-radius:var(--r50);background:var(--g100);border:1px solid var(--g200);color:var(--black);cursor:pointer;}
+.chip.on{background:var(--lightblush);border-color:var(--pink);color:var(--black);}
+.meter{margin:14px 0 4px;}
+.meter .ml{display:flex;justify-content:space-between;font-size:11px;color:var(--g500);margin-bottom:5px;}
+.feedback{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--g500);}
+.thumb{width:34px;height:34px;border:1px solid var(--g200);border-radius:var(--r50);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--black);background:#fff;}
+.thumb.on{background:var(--lightblush);border-color:var(--pink);}
+/* shade helper */
+.shade{display:flex;align-items:center;gap:10px;border:1px solid var(--g200);border-radius:var(--r4);padding:13px;margin:14px 16px;cursor:pointer;}
+.shade .sd{width:18px;height:18px;border-radius:50%;background:var(--blush);flex:0 0 18px;}
+.shade b{font-size:14px;font-weight:500;}
+/* PDP info */
+.pdpinfo{padding:16px;}
+.pdpinfo .brand{font-size:14px;font-weight:500;text-decoration:underline;cursor:pointer;}
+.pdpinfo .title{font-size:18px;font-weight:500;margin-top:4px;}
+.pdpinfo .price{font-size:16px;font-weight:600;margin-top:8px;}
+.pdpinfo .serif{font-family:var(--serif);font-size:18px;line-height:1.4;margin-top:12px;color:var(--black);}
+/* sticky action bar */
+.actionbar{flex:0 0 auto;display:flex;gap:10px;padding:12px 14px 26px;border-top:1px solid var(--g200);background:#fff;box-shadow:var(--sh-top);}
+.actionbar .btn{flex:1;width:auto;}
+.sq{width:56px;height:56px;border:1px solid #000;border-radius:var(--r4);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000;}
+/* tab bar */
+.tabbar{flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;padding:9px 10px 26px;border-top:1px solid var(--g200);background:#fff;}
+.tab{flex:1;background:none;border:none;font:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--g400);cursor:pointer;}
+.tab b{font-size:9.5px;font-weight:500;letter-spacing:.3px;}
+.tab.on{color:var(--black);}
+.tab .ti{position:relative;}
+.tab .bdg{position:absolute;top:-4px;right:-9px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+.tab.logo .m{font-size:26px;font-weight:700;line-height:24px;color:var(--black);letter-spacing:-1px;}
+/* checkbox */
+.cbx{width:24px;height:24px;border:1.5px solid var(--g300);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex:0 0 24px;}
+.cbx .ic{display:none;}
+.cbx.on{background:var(--black);border-color:var(--black);}
+.cbx.on .ic{display:block;}
+/* select */
+.selfield{border:1px solid var(--g200);border-radius:var(--r4);padding:9px 12px;position:relative;display:flex;align-items:center;cursor:pointer;}
+.selfield .fl{position:absolute;top:-7px;left:10px;background:#fff;padding:0 4px;font-size:11px;color:var(--g500);}
+.selfield .val{font-size:15px;}
+.selfield .ch{margin-left:auto;color:var(--g500);}
+.checkrow{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:8px;color:var(--black);}
+.checkrow .cc{width:18px;height:18px;border-radius:50%;background:var(--black);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 18px;}
+.checkrow .cc .ic{width:11px;height:11px;}
+.divider{height:1px;background:var(--g200);margin:16px 0;}
+.footer{padding:18px 16px 8px;text-align:center;font-size:11px;color:var(--g500);display:flex;align-items:center;justify-content:center;gap:8px;}
+.legend{margin-top:30px;font-size:12px;color:var(--g500);border-top:1px solid var(--g200);padding-top:16px;}
+/* ---- B3: IKEA Family home pattern, MECCA reskin ---- */
+.statusbar.light{color:#fff;}
+.statusbar.light .ic-st{fill:#fff;}
+.statusbar.light .ic-bt{stroke:#fff;}
+.ikwrap{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;scrollbar-width:none;}
+.ikwrap::-webkit-scrollbar{display:none;}
+.ikhero{background:linear-gradient(165deg,#56223d 0%,#7c2a4d 42%,#ef60a3 120%);color:#fff;padding:0 0 54px;position:sticky;top:0;z-index:1;will-change:opacity;}
+.ikhead{display:flex;align-items:flex-start;padding:8px 20px 0;}
+.ikname{font-size:24px;font-weight:600;letter-spacing:-.3px;line-height:1.1;}
+.ikmem{font-size:14px;opacity:.85;margin-top:3px;}
+.ikactions{margin-left:auto;display:flex;gap:10px;}
+.ikcirc{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;position:relative;}
+.ikcirc .ic{width:22px;height:22px;color:#fff;}
+.nbadge{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #6f2647;}
+.iktiles{display:flex;gap:14px;padding:22px 20px 0;}
+.iktile{flex:1;min-height:150px;border-radius:var(--r8);padding:16px;display:flex;flex-direction:column;}
+.iktile.wallet{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);}
+.iktile.points{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);color:#fff;cursor:pointer;gap:5px;justify-content:flex-start;transition:transform .15s var(--ease);}
+.iktile.points:active{transform:scale(.985);}
+.iktile.points .tlab{margin-top:0;}
+.ptop{display:flex;align-items:center;}
+.pchev{margin-left:auto;width:18px;height:18px;color:#fff;}
+.ptier{font-size:13px;font-weight:600;}
+.plab2{display:flex;justify-content:space-between;font-size:10px;opacity:.78;margin-top:3px;}
+.ptrack{height:6px;border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden;margin-top:3px;}
+.pfill{height:100%;background:#fff;border-radius:3px;}
+.phint2{font-size:11px;opacity:.82;margin-top:4px;}
+.ikrewards{border:1px solid var(--g200);border-radius:var(--r8);padding:14px 16px;margin-bottom:22px;}
+.ikrw-h{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.ikrw-h b{font-size:15px;}
+.ikrw-h .lnk{margin-left:auto;}
+.ikrw-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;padding:10px 0;border-top:1px solid var(--g100);}
+.redeem{color:var(--pink);font-weight:600;}
+.iktile .tic{width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;}
+.iktile .tlab{margin-top:auto;font-size:22px;font-weight:600;letter-spacing:-.2px;}
+.iktile.wallet .tlab{color:#fff;}
+.iksheet{background:#fff;border-radius:24px 24px 0 0;margin-top:-28px;flex:1;padding:24px 20px 18px;position:relative;z-index:2;}
+.ikh2{font-size:22px;font-weight:600;letter-spacing:-.2px;margin-bottom:14px;}
+.ikacts{display:flex;gap:14px;}
+.ikact{flex:1;border:1px solid var(--g200);border-radius:var(--r8);padding:16px 16px 18px;}
+.ikact .aic{width:44px;height:44px;border-radius:50%;background:var(--g100);display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.ikact .aic .ic{width:22px;height:22px;}
+.ikact .alab{font-size:16px;}
+.ikrowh{display:flex;align-items:center;margin:26px 0 14px;}
+.ikrowh h3{font-size:22px;font-weight:600;letter-spacing:-.2px;}
+.ikplus{margin-left:auto;width:30px;height:30px;display:flex;align-items:center;justify-content:center;}
+.ikplus .ic{width:24px;height:24px;}
+.ikpct{margin-left:10px;font-size:13px;font-weight:500;color:#666666;}
+.ikbigcard{height:158px;border-radius:var(--r8);overflow:hidden;position:relative;margin-bottom:4px;}
+.ikprofcard{background-size:cover;background-position:center;}
+.ikprofcard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.5));}
+.ikprofcard .pfcta{position:absolute;left:14px;bottom:13px;z-index:1;display:flex;align-items:center;gap:5px;color:#fff;font-size:14px;font-weight:600;}
+.ikprofcard .pfcta .ic{width:18px;height:18px;color:#fff;}
+.ikrewcard{display:flex;flex-direction:column;justify-content:center;gap:10px;padding:14px;background:linear-gradient(135deg,var(--lightblush),var(--blush) 72%,#d6b8e4);}
+.ikrewrow{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.72);border-radius:var(--r8);padding:11px 14px;}
+.ikrewrow .rw-l{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;}
+.ikrewrow .rw-l .ic{width:20px;height:20px;color:var(--pink);}
+.ikrewrow .redeem{color:var(--pink);font-weight:600;font-size:14px;}
+/* reward cards — heart-thumbnail + copy (bonus-card pattern) */
+.rwlist{display:flex;flex-direction:column;gap:10px;margin-bottom:4px;}
+.rwcard{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--g200);border-radius:var(--r8);padding:12px;cursor:pointer;transition:box-shadow .15s var(--ease),transform .15s var(--ease);}
+.rwcard:active{transform:scale(.99);box-shadow:var(--sh-bottom);}
+.rwthumb{position:relative;width:96px;height:96px;border-radius:var(--r4);overflow:hidden;flex:0 0 96px;display:flex;align-items:center;justify-content:center;}
+.rwthumb .hrt{position:absolute;fill:currentColor;stroke:none;}
+.rwthumb .rwlvl{position:relative;z-index:2;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#fff;font-weight:600;}
+.rwbody{flex:1;min-width:0;}
+.rwbody .rt{font-size:15px;font-weight:600;}
+.rwbody .rd{font-size:12.5px;color:var(--g500);line-height:1.38;margin-top:3px;}
+.rwbody .rl{display:inline-block;margin-top:9px;font-size:13px;font-weight:500;text-decoration:underline;color:var(--black);}
+/* notifications screen (slide-in over B3) */
+.notifpanel,.setpanel{position:absolute;inset:0;background:#fff;z-index:60;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .32s var(--ease);}
+.notifpanel.on,.setpanel.on{transform:translateX(0);}
+.notifpanel .appscroll,.setpanel .appscroll{flex:1;overflow-y:auto;scrollbar-width:none;}
+.notifpanel .appscroll::-webkit-scrollbar,.setpanel .appscroll::-webkit-scrollbar{display:none;}
+.nsec{padding:14px 16px 6px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--g500);font-weight:600;}
+.nitem{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid var(--g100);position:relative;cursor:pointer;transition:background .15s var(--ease);}
+.nitem:active{background:var(--g100);}
+.nitem.unread{background:var(--lightblush);}
+.nitem.unread:active{background:#ffe4ee;}
+.nicon{width:40px;height:40px;border-radius:var(--r50);background:var(--g100);display:flex;align-items:center;justify-content:center;flex:0 0 40px;color:var(--black);}
+.nicon .ic{width:20px;height:20px;}
+.nicon.pink{background:#fff;color:var(--pink);}
+.nbody{flex:1;min-width:0;padding-right:14px;}
+.nbody .ntt{font-size:14px;font-weight:600;}
+.nbody .nbd{font-size:12.5px;color:var(--g500);line-height:1.36;margin-top:2px;}
+.nbody .ntime{font-size:11px;color:var(--g400);margin-top:6px;}
+.ndot{position:absolute;top:16px;right:16px;width:8px;height:8px;border-radius:var(--r50);background:var(--pink);}
+.nempty{padding:40px 24px;text-align:center;color:var(--g500);font-size:13px;}
+/* Option D — newcomer header (transparent card on dark hero) + activity grid */
+.dnewcard{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);border-radius:var(--r8);padding:16px;color:#fff;width:100%;cursor:pointer;transition:transform .15s var(--ease);}
+.dnewcard:active{transform:scale(.99);}
+.dnc-top{display:flex;align-items:center;gap:10px;}
+.dnc-eyebrow{font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.82;font-weight:600;}
+.dnc-tier{font-size:20px;font-weight:600;letter-spacing:-.2px;margin-top:2px;}
+.dnc-pts{margin-left:auto;font-size:16px;font-weight:700;white-space:nowrap;}
+.dnc-pts .u{font-weight:600;opacity:.85;font-size:12px;}
+.dnewcard .pchev{width:18px;height:18px;color:#fff;flex:0 0 18px;}
+.dnewcard .plab2{margin-top:14px;}
+.dacts{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.dacts .ikact{margin:0;}
+.dacts .aic .mm{font-weight:800;color:var(--pink);font-size:18px;}
+/* current-experience critique note card */
+.notecard{width:393px;max-width:100%;background:var(--negbg);border:1px solid #f2cccc;border-radius:var(--r8);padding:14px 16px;}
+.notecard h5{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--neg);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.notecard h5 .ic{width:15px;height:15px;color:var(--neg);}
+.notecard ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.notecard li{font-size:12.5px;color:var(--black);line-height:1.4;padding-left:16px;position:relative;}
+.notecard li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--neg);}
+.notecard li b{font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="masthead">
+<div class="kicker">MECCA · Account Hub — app concept</div>
+<h1>“Account Hub” — App concept directions</h1>
+<p>Four interactive directions for making “Account” feel like <b>You at MECCA</b> — plus today’s live experience for comparison. Rendered in a true iPhone 15 Pro frame (393×852pt with Dynamic Island), skinned with the real MECCA tokens, with a proper line-icon set. Carousels swipe, accordions expand, tabs and chips respond — tap around.</p>
+<div class="swatches"><span>Built with MECCA tokens</span>
+<div class="sw" style="background:#ef60a3" title="meccapink"></div><div class="sw" style="background:#cc1426" title="meccared"></div><div class="sw" style="background:#56223d" title="meccapurple"></div><div class="sw" style="background:#fff0eb" title="lightblush"></div><div class="sw" style="background:#f69170" title="orange"></div><div class="sw" style="background:#000" title="black (controls only)"></div><div class="sw" style="background:#f7f7f7" title="grey100"></div>
+</div>
+</div>
+<div class="segmented">
+<button class="seg on" data-opt="A">Option A<small>Account Hub overlay</small></button>
+<button class="seg" data-opt="B">Option B<small>Loyalty-first hub</small></button>
+<button class="seg" data-opt="C">Option C<small>Hub as destination</small></button>
+<button class="seg" data-opt="D">Option D<small>Newcomer loyalty home</small></button>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 5v14M7 5v14M10.5 5v14M14 5v14M17.5 5v14M21 5v14"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 8h12l-1 12.5H7L6 8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9.5" rx="1"/><rect x="3.5" y="7.6" width="17" height="3.6" rx="1"/><path d="M12 7.6v12.9"/><path d="M12 7.6C11 4 9 4 8 5s0 2.6 4 2.6zM12 7.6C13 4 15 4 16 5s0 2.6-4 2.6z"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.3l-1.6-1.5C5.4 14.3 2.9 11.9 2.9 9 2.9 6.7 4.7 5 7 5c1.4 0 2.7.6 3.5 1.7L12 8.3l1.5-1.6C14.3 5.6 15.6 5 17 5c2.3 0 4.1 1.7 4.1 4 0 2.9-2.5 5.3-7.5 9.8L12 20.3z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-chev-d" viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.6v3M12 18.4v3M2.6 12h3M18.4 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9.5" rx="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/></symbol>
+<symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3v-17z"/><path d="M9 8.5h6M9 12.5h6"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></symbol>
+<symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.7h.01"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.6 2.6 0 0 1 5 .9c0 1.7-2.4 2-2.4 3.6M12 17h.01"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.6l-5.2 2.7 1-5.8L3.6 9.3l5.8-.8L12 3.2z"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></symbol>
+<symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.7 4.8 4.8 1.7-4.8 1.7L12 16l-1.7-4.8L5.5 9.5l4.8-1.7L12 3z"/></symbol>
+<symbol id="i-thumb-up" viewBox="0 0 24 24"><path d="M7 10v9H4v-9zM7 10l3.5-7c1.3 0 2.2 1 2 2.3L11.8 9H18a2 2 0 0 1 2 2.3l-1 6A2 2 0 0 1 17 19H7"/></symbol>
+<symbol id="i-thumb-down" viewBox="0 0 24 24"><path d="M17 14V5h3v9zM17 14l-3.5 7c-1.3 0-2.2-1-2-2.3L12.2 15H6a2 2 0 0 1-2-2.3l1-6A2 2 0 0 1 7 5h10"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-signal" viewBox="0 0 24 18"><rect x="1" y="12" width="3.4" height="5" rx="1"/><rect x="6.5" y="8.5" width="3.4" height="8.5" rx="1"/><rect x="12" y="5" width="3.4" height="12" rx="1"/><rect x="17.5" y="1.5" width="3.4" height="15.5" rx="1"/></symbol>
+<symbol id="i-wifi" viewBox="0 0 24 18"><path d="M3 6.5a13 13 0 0 1 18 0M6 10a8.5 8.5 0 0 1 12 0M9 13.4a4 4 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 16.6h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="i-battery" viewBox="0 0 26 14"><rect x="1" y="1" width="21" height="12" rx="3"/><rect x="3" y="3" width="15" height="8" rx="1.5" fill="currentColor" stroke="none"/><path d="M24 5v4" stroke-width="2"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4s2-1 2-5.5z"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5"/><path d="M6 10v9.5h12V10"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></symbol>
+</defs></svg>
+
+<!-- ============ OPTION A ============ -->
+<div class="optpane on" data-opt="A">
+<div class="opthead"><span class="tag">Option A · smallest change, highest leverage</span><h2>Account Hub overlay</h2><p>A value layer sits <b>above</b> the existing settings: an identity header, value tiles, and a Profile&nbsp;Fit entry — settings stay below, untouched. The PDP gains a “why this matches you” module that closes the confidence loop.</p></div>
+<div class="rationale"><div><h4>What it optimises for</h4><p>Low-risk activation of value members already have + shopping confidence.</p></div><div><h4>IA risk</h4><p>Minimal — ships as an overlay; settings list is unchanged below.</p></div><div><h4>Watch-out</h4><p>Hub + Settings can feel stacked unless visually integrated.</p></div></div>
+<div class="stage">
+
+<!-- A1 Account Hub -->
+<div class="device"><div class="cap"><b>A1 · Account Hub (Account reworked)</b><br>Identity header → value tiles → Profile Fit → settings below</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><span class="ttl">Account</span><span class="sp"></span><div class="ab-ic"><svg class="ic"><use href="#i-gear"/></svg></div></div>
+<div class="appscroll">
+<div class="sec">
+<div class="idcard"><div class="idrow"><div class="avatar">JR</div><div><div class="idname">James R.</div><div class="idtier">Beauty Newcomer</div></div><div class="ring"><i>40%</i></div></div>
+<div class="progress"><div class="plab"><span>Profile completeness</span><span>40%</span></div><div class="track"><div class="fill" style="width:40%"></div></div><div class="phint">Add your skin type to sharpen your matches.</div></div></div>
+</div>
+<div class="sec" style="padding-top:0">
+<div class="tiles">
+<div class="tile pink"><svg class="ic" style="color:var(--pink)"><use href="#i-gift"/></svg><div class="tt">Beauty Loop</div><div class="ss">120 pts · Newcomer</div></div>
+<div class="tile"><svg class="ic"><use href="#i-sparkle"/></svg><div class="tt">Beauty Profile</div><div class="ss">40% complete</div></div>
+<div class="tile"><svg class="ic"><use href="#i-receipt"/></svg><div class="tt">Purchases</div><div class="ss">12 orders</div></div>
+<div class="tile"><svg class="ic"><use href="#i-heart"/></svg><div class="tt">Wishlists</div><div class="ss">2 lists · 15 items</div></div>
+</div>
+<div style="height:12px"></div>
+<div class="fitentry"><div class="ci"><svg class="ic"><use href="#i-target"/></svg></div><div class="ft"><b>Profile Fit</b><span>See why products match you — from your profile</span></div><svg class="ic"><use href="#i-chev-r"/></svg></div>
+<div class="acc"><div class="acc-h"><svg class="ic sm"><use href="#i-gift"/></svg>Your membership benefits<svg class="ic ch"><use href="#i-chev-d"/></svg></div><div class="acc-b"><div class="acc-bi"><div class="row"><span>Birthday gift</span><span>Newcomer+</span></div><div class="row"><span>Free samples with orders</span><span>All levels</span></div><div class="row"><span>Early access to launches</span><span>Level 2+</span></div></div></div></div>
+</div>
+<div class="sec" style="padding-top:4px"><div class="eyebrow" style="margin-bottom:4px">Settings</div>
+<div class="list">
+<div class="lrow"><svg class="ic"><use href="#i-user"/></svg><span class="lb">Personal details</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-cal"/></svg><span class="lb">Bookings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-lock"/></svg><span class="lb">Change password</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow noborder"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Contact us</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+</div></div>
+<div style="height:14px"></div>
+</div>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">3</span></span><b>My bag</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+<!-- A2 PDP Profile Fit -->
+<div class="device"><div class="cap"><b>A2 · PDP with Profile Fit module</b><br>“Why this matches you” — reason chips, fit meter, feedback</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><div class="ab-ic"><svg class="ic"><use href="#i-back"/></svg></div><span class="ttl">Victoria Beckham</span><span class="sp"></span><div class="ab-ic"><svg class="ic"><use href="#i-arrow-r"/></svg></div></div>
+<div class="appscroll">
+<div class="car" data-dots="light-no"><div class="car-track"><div class="car-slide" style="height:300px;background:var(--g100)"></div><div class="car-slide" style="height:300px;background:#efe7e3"></div><div class="car-slide" style="height:300px;background:#f3eef0"></div></div><div class="car-dots"></div></div>
+<div class="pdpinfo"><div class="brand">Victoria Beckham Beauty</div><div class="title">The Foundation Drops with TFC8®</div><div class="price">$185.00</div>
+<div class="stars"><svg class="ic fill"><use href="#i-star"/></svg><svg class="ic fill"><use href="#i-star"/></svg><svg class="ic fill"><use href="#i-star"/></svg><svg class="ic fill"><use href="#i-star"/></svg><svg class="ic fill" style="color:var(--g300)"><use href="#i-star"/></svg><span>(88)</span></div>
+<div class="serif">“The gold standard in skin-first foundation.”</div></div>
+<div class="fitmod"><div class="fh"><span class="ci"><svg class="ic"><use href="#i-target"/></svg></span><b>Why this matches you</b></div>
+<div class="fb"><div class="chips"><span class="chip on">Dry skin</span><span class="chip on">Medium coverage</span><span class="chip">Fragrance-free</span><span class="chip">Neutral undertone</span></div>
+<div class="meter"><div class="ml"><span>Fit for your profile</span><span style="color:var(--black);font-weight:600">86%</span></div><div class="track"><div class="fill" style="width:86%"></div></div></div>
+<p style="font-size:12.5px;color:var(--g500)">Based on your <b style="color:#000">dry skin</b> and <b style="color:#000">medium-coverage</b> preference. Tap a chip to refine.</p>
+<div class="feedback">Was this helpful?<span class="thumb"><svg class="ic sm"><use href="#i-thumb-up"/></svg></span><span class="thumb"><svg class="ic sm"><use href="#i-thumb-down"/></svg></span></div></div></div>
+<div class="shade"><span class="sd"></span><b>Need help finding your shade?</b><svg class="ic ch" style="margin-left:auto;color:var(--g400)"><use href="#i-chev-r"/></svg></div>
+<div class="sec"><div class="acc"><div class="acc-h">Description<svg class="ic ch"><use href="#i-chev-d"/></svg></div><div class="acc-b"><div class="acc-bi">A weightless, buildable foundation with a natural finish. Powered by TFC8® for skin-loving wear.</div></div></div>
+<div class="acc"><div class="acc-h">Reviews (88)<svg class="ic ch"><use href="#i-chev-d"/></svg></div><div class="acc-b"><div class="acc-bi">“Best match the app has ever suggested for me.” — verified buyer</div></div></div></div>
+<div style="height:8px"></div>
+</div>
+<div class="actionbar"><button class="btn">Add to bag</button><div class="sq heart"><svg class="ic"><use href="#i-heart"/></svg></div></div>
+<span class="homebar"></span>
+</div></div></div>
+
+</div></div>
+
+<!-- ============ OPTION B ============ -->
+<div class="optpane" data-opt="B">
+<div class="opthead"><span class="tag">Option B · stronger membership posture</span><h2>Loyalty-first hub</h2><p>Beauty Loop becomes the spine: a persistent <b>points wallet</b>, a dominant tier header, and rewards up front. The profile is framed as the way to <b>improve your matches</b>. Home carries the same wallet so value is always one glance away. <b>B3</b> benchmarks the exact IKEA Family home pattern — value tiles, activities, projects — reskinned in MECCA&rsquo;s system as a layout reference.</p></div>
+<div class="rationale"><div><h4>What it optimises for</h4><p>Retention and value exchange — making membership feel like the identity.</p></div><div><h4>IA risk</h4><p>Moderate — wallet pattern must be consistent across Home + hub.</p></div><div><h4>Watch-out</h4><p>Can over-weight loyalty vs shopping confidence; align with Home widget.</p></div></div>
+<div class="stage">
+
+<!-- B1 Loyalty hub -->
+<div class="device"><div class="cap"><b>B1 · Loyalty-first hub</b><br>Points wallet → tier carousel → rewards → profile nudge</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><span class="ttl">Beauty Loop</span><span class="sp"></span><div class="ab-ic"><svg class="ic"><use href="#i-info"/></svg></div></div>
+<div class="appscroll">
+<div class="sec grey"><div style="display:flex;align-items:center"><div><div class="eyebrow">You are currently a</div><h3 class="t2" style="margin-top:2px">Beauty Newcomer</h3></div><div class="wallet" style="margin-left:auto"><span class="dot2"></span><span class="pk">120</span> pts</div></div>
+<div class="progress"><div class="plab"><span>Member</span><span>Level 1</span></div><div class="track"><div class="fill" style="width:22%"></div></div><div class="phint">Spend $234 more to reach Level 1.</div></div></div>
+<div class="sec"><div class="subhead"><h3>Your tiers</h3><span class="lnk">See all</span></div>
+<div class="car peek"><div class="car-track">
+<div class="car-slide"><div class="tier"><div class="im lv0"><div class="cur">Current</div><div class="mem">Member</div></div><div class="bd"><div class="nm">Beauty Newcomer</div><div class="sp">Yearly spend $0 – $299.99.</div><span class="lnk">See benefits</span></div></div></div>
+<div class="car-slide"><div class="tier"><div class="im lv1"><div class="cur">Level 1</div><div class="mem">$300+</div></div><div class="bd"><div class="nm">Level 1</div><div class="sp">Yearly spend $300 – $599.99.</div><span class="lnk">See benefits</span></div></div></div>
+<div class="car-slide"><div class="tier"><div class="im lv2"><div class="cur">Level 2</div><div class="mem">$600+</div></div><div class="bd"><div class="nm">Level 2</div><div class="sp">Yearly spend $600 – $1,199.99.</div><span class="lnk">See benefits</span></div></div></div>
+<div class="car-slide"><div class="tier"><div class="im lv3"><div class="cur">Level 3</div><div class="mem">$1,200+</div></div><div class="bd"><div class="nm">Level 3</div><div class="sp">Yearly spend $1,200 – $3,999.99.</div><span class="lnk">See benefits</span></div></div></div>
+<div class="car-slide"><div class="tier"><div class="im lv4"><div class="cur">Level 4</div><div class="mem">$4,000+</div></div><div class="bd"><div class="nm">Level 4</div><div class="sp">Yearly spend $4,000+.</div><span class="lnk">See benefits</span></div></div></div>
+</div><div class="car-dots"></div></div></div>
+<div class="sec" style="padding-top:0"><div class="subhead"><h3>Rewards &amp; vouchers</h3></div>
+<div class="acc open"><div class="acc-h"><svg class="ic sm" style="color:var(--pink)"><use href="#i-gift"/></svg>2 rewards ready<svg class="ic ch"><use href="#i-chev-d"/></svg></div><div class="acc-b"><div class="acc-bi"><div class="row"><span>$10 birthday voucher</span><span style="color:var(--pink);font-weight:600">Redeem</span></div><div class="row"><span>Free deluxe sample</span><span style="color:var(--pink);font-weight:600">Redeem</span></div></div></div></div>
+<div class="fitentry" style="margin-top:12px"><div class="ci"><svg class="ic"><use href="#i-sparkle"/></svg></div><div class="ft"><b>Improve your matches</b><span>Complete your Beauty Profile (40%) to earn better picks</span></div><svg class="ic"><use href="#i-chev-r"/></svg></div>
+<div style="height:14px"></div><button class="btn"><span style="display:inline-flex;align-items:center;gap:8px;justify-content:center">Scan Beauty Loop card</span></button>
+<div style="height:14px"></div></div>
+</div>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">3</span></span><b>My bag</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+<!-- B2 Home with wallet -->
+<div class="device"><div class="cap"><b>B2 · Home with persistent wallet</b><br>Hero carousel + points chip + loyalty deep-link</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appscroll">
+<div class="searchwrap"><div class="searchbar"><svg class="ic" style="color:var(--black)"><use href="#i-search"/></svg><input placeholder="Search the best in beauty"></div><button class="scan"><svg class="ic sm"><use href="#i-scan"/></svg>Scan</button></div>
+<div class="car" data-dots="light"><div class="car-track">
+<div class="car-slide"><div class="hero hg1"><div class="ovl-h">So good, it’s badalada!</div><div class="ovl-s">The new season drop is here.</div><button class="shopnow">Shop now</button></div></div>
+<div class="car-slide"><div class="hero hg2"><div class="ovl-h">Skin-first foundations</div><div class="ovl-s">Matched to your profile.</div><button class="shopnow">Shop now</button></div></div>
+<div class="car-slide"><div class="hero hg3"><div class="ovl-h">Special edition gifting</div><div class="ovl-s">Limited time only.</div><button class="shopnow">Shop now</button></div></div>
+</div><div class="car-dots herodots"></div></div>
+<div class="sec grey"><div style="display:flex;align-items:center"><div><div class="eyebrow">Welcome back</div><h3 class="t2" style="margin-top:2px">James</h3></div><div class="wallet" style="margin-left:auto"><span class="dot2"></span><span class="pk">120</span> pts</div></div>
+<div class="idcard" style="margin-top:14px;background:#fff"><div style="display:flex;align-items:center;gap:8px"><svg class="ic sm" style="color:var(--pink)"><use href="#i-gift"/></svg><b style="font-size:14px">Beauty Loop</b><span class="lnk" style="margin-left:auto">Open</span></div>
+<div class="progress"><div class="plab"><span>Member</span><span>Level 1</span></div><div class="track"><div class="fill" style="width:22%"></div></div><div class="phint">Spend $234 more to unlock Level 1.</div></div></div></div>
+<div class="sec"><div class="subhead"><h3>New this week</h3><span class="lnk">Shop now</span></div>
+<div class="prow">
+<div class="pcard"><div class="pim"><span class="heart"><svg class="ic"><use href="#i-heart"/></svg></span><span class="badge">Satin finish</span><span class="qadd"><svg class="ic sm"><use href="#i-plus"/></svg></span></div><div class="br">MECCA MAX</div><div class="nm">Off Duty Cream Blush</div><div class="pr">$22.00</div></div>
+<div class="pcard"><div class="pim"><span class="heart"><svg class="ic"><use href="#i-heart"/></svg></span><span class="badge">Limited</span><span class="qadd"><svg class="ic sm"><use href="#i-plus"/></svg></span></div><div class="br">MECCA COSMETICA</div><div class="nm">To Save Face SPF50+</div><div class="pr">$45.00</div></div>
+<div class="pcard"><div class="pim"><span class="heart"><svg class="ic"><use href="#i-heart"/></svg></span><span class="qadd"><svg class="ic sm"><use href="#i-plus"/></svg></span></div><div class="br">Victoria Beckham</div><div class="nm">Foundation Drops</div><div class="pr">$185.00</div></div>
+</div><div style="height:16px"></div></div>
+</div>
+<button class="pillbtn float floatlight"><svg class="ic sm"><use href="#i-cal"/></svg>Book a service</button>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">3</span></span><b>My bag</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+
+<!-- B3 IKEA-pattern reskin -->
+<div class="device"><div class="cap"><b>B3 · Loyalty home — IKEA pattern, MECCA skin</b><br>Frosted Wallet + Points (loop status) in a sticky purple header that fades on scroll · activities · Beauty Profile (image card) · Your Rewards</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="notifpanel" id="b3notif">
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><div class="ab-ic" data-close="notif"><svg class="ic"><use href="#i-back"/></svg></div><span class="ttl">Notifications</span><span class="sp"></span><div class="ab-ic" data-clear="notif"><svg class="ic"><use href="#i-check"/></svg></div></div>
+<div class="appscroll">
+<div class="nsec">Today</div>
+<div class="nitem unread"><div class="nicon pink"><svg class="ic"><use href="#i-gift"/></svg></div><div class="nbody"><div class="ntt">Your birthday gift is here</div><div class="nbd">A $10 voucher has landed in your rewards. Redeem it before 31 July.</div><div class="ntime">2h ago</div></div><span class="ndot"></span></div>
+<div class="nitem"><div class="nicon pink"><svg class="ic"><use href="#i-sparkle"/></svg></div><div class="nbody"><div class="ntt">A new match for your profile</div><div class="nbd">Victoria Beckham Foundation Drops — 86% fit for your skin type and coverage.</div><div class="ntime">5h ago</div></div></div>
+<div class="nsec">Earlier</div>
+<div class="nitem"><div class="nicon"><svg class="ic"><use href="#i-bag"/></svg></div><div class="nbody"><div class="ntt">Your order is on its way</div><div class="nbd">Order #10482 has shipped. Track it for live delivery updates.</div><div class="ntime">Yesterday</div></div></div>
+<div class="nitem"><div class="nicon"><svg class="ic"><use href="#i-gift"/></svg></div><div class="nbody"><div class="ntt">You earned 45 points</div><div class="nbd">Thanks for your recent purchase. You're $234 from reaching Level 1.</div><div class="ntime">2 days ago</div></div></div>
+<div class="nitem"><div class="nicon"><svg class="ic"><use href="#i-cal"/></svg></div><div class="nbody"><div class="ntt">Booking reminder</div><div class="nbd">Your brow appointment is this Saturday at 2:00pm — MECCA Bourke St.</div><div class="ntime">3 days ago</div></div></div>
+<div style="height:20px"></div>
+</div>
+<span class="homebar"></span>
+</div>
+<div class="ikwrap">
+<div class="ikhero">
+<div class="statusbar light"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="ikhead"><div><div class="ikname">James</div><div class="ikmem">Beauty Loop member</div></div>
+<div class="ikactions"><div class="ikcirc"><svg class="ic"><use href="#i-gear"/></svg></div><div class="ikcirc" data-goto="notif"><svg class="ic"><use href="#i-bell"/></svg><span class="nbadge">1</span></div></div></div>
+<div class="iktiles">
+<div class="iktile wallet"><div class="tic"><span style="font-weight:800;color:var(--pink);font-size:18px">M</span></div><span class="tlab">Wallet</span></div>
+<div class="iktile points" data-goto="loop"><div class="ptop"><span class="tlab">120 pts</span><svg class="ic pchev"><use href="#i-chev-r"/></svg></div><div class="ptier">Beauty Newcomer</div><div class="plab2"><span>Member</span><span>Level 1</span></div><div class="ptrack"><div class="pfill" style="width:22%"></div></div><div class="phint2">Spend $234 more to reach Level 1</div></div>
+</div>
+</div>
+<div class="iksheet">
+<div class="ikh2">Your activities</div>
+<div class="ikacts">
+<div class="ikact"><div class="aic"><svg class="ic"><use href="#i-bag"/></svg></div><div class="alab">Purchases</div></div>
+<div class="ikact"><div class="aic"><svg class="ic" style="color:var(--red)"><use href="#i-heart"/></svg></div><div class="alab">Saved lists</div></div>
+</div>
+<div class="ikrowh"><h3>Beauty Profile</h3><span class="ikpct">60% complete</span></div>
+<div class="ikbigcard ikprofcard" style="background-image:url('https://contenthub-delivery.mecca.com/api/public/content/makeup-nav-tiles-march-26-complexion-1x1-C1jlyv4RdyjMOoqN9ITZA.webp')"><span class="pfcta">Complete your profile <svg class="ic"><use href="#i-chev-r"/></svg></span></div>
+<div class="ikrowh"><h3>Your Rewards</h3><span class="lnk" style="margin-left:auto">See all</span></div>
+<div class="rwlist">
+<div class="rwcard">
+<div class="rwthumb" style="background:#e6c3dd">
+<svg class="hrt" style="width:82px;height:82px;left:-18px;bottom:-16px;color:var(--red)"><use href="#i-heart"/></svg>
+<svg class="hrt" style="width:60px;height:60px;right:-12px;top:-10px;color:#d6b8e4"><use href="#i-heart"/></svg>
+<span class="rwlvl">Birthday</span>
+</div>
+<div class="rwbody"><div class="rt">Your birthday gift</div><div class="rd">A $10 voucher is waiting — treat yourself to something new this month.</div><span class="rl">Redeem now</span></div>
+</div>
+<div class="rwcard">
+<div class="rwthumb" style="background:#f4a08a">
+<svg class="hrt" style="width:84px;height:84px;left:6px;top:12px;color:var(--red)"><use href="#i-heart"/></svg>
+<svg class="hrt" style="width:46px;height:46px;right:-6px;bottom:-6px;color:#f6a8cc"><use href="#i-heart"/></svg>
+<span class="rwlvl">Sample</span>
+</div>
+<div class="rwbody"><div class="rt">Free deluxe sample</div><div class="rd">Add a complimentary deluxe sample to your next MECCA order.</div><span class="rl">Choose sample</span></div>
+</div>
+</div>
+<div style="height:24px"></div>
+</div>
+</div>
+<div class="tabbar">
+<button class="tab on"><svg class="ic"><use href="#i-home"/></svg><b>Home</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m" style="font-size:12px;font-weight:700">JR</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-grid"/></svg><b>Services</b></button>
+<button class="tab"><svg class="ic"><use href="#i-bag"/></svg><b>My bag</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+</div></div>
+
+<!-- ============ OPTION C ============ -->
+<div class="optpane" data-opt="C">
+<div class="opthead"><span class="tag">Option C · clean separation</span><h2>Account-as-utility, Hub-as-destination</h2><p>Account stays a tidy settings list with one clear entry CTA. The Account Hub becomes its own <b>destination</b> screen — reached from Home and the Account CTA — with room to grow.</p></div>
+<div class="rationale"><div><h4>What it optimises for</h4><p>Clarity now + long-term expansion room for the hub.</p></div><div><h4>IA risk</h4><p>Higher — more navigation steps; discoverability must be earned.</p></div><div><h4>Watch-out</h4><p>Harder to justify in Q3 if a full hub rebuild is out of scope.</p></div></div>
+<div class="stage">
+
+<!-- C1 Account settings-only -->
+<div class="device"><div class="cap"><b>C1 · Account (settings-only) + entry CTA</b><br>One card opens the hub; the rest stays utility</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><span class="ttl">Account</span></div>
+<div class="appscroll">
+<div class="sec"><div class="fitentry" style="background:#fff;border:1px solid #000"><div class="avatar sm">JR</div><div class="ft"><b>Open your MECCA Account Hub</b><span>Membership, points &amp; profile in one place</span></div><svg class="ic"><use href="#i-chev-r"/></svg></div></div>
+<div class="sec" style="padding-top:0"><div class="eyebrow" style="margin-bottom:4px">Account</div>
+<div class="list">
+<div class="lrow"><svg class="ic"><use href="#i-heart"/></svg><span class="lb">Wishlists</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-user"/></svg><span class="lb">Personal details</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-cal"/></svg><span class="lb">Bookings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-receipt"/></svg><span class="lb">Purchases</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-lock"/></svg><span class="lb">Change password</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-gear"/></svg><span class="lb">Settings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow noborder"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Contact us</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+</div>
+<div class="list" style="margin-top:14px"><div class="lrow"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Send app feedback</span></div><div class="lrow noborder"><svg class="ic"><use href="#i-arrow-r"/></svg><span class="lb">Sign out</span></div></div>
+<div class="footer">App version 2.58.1 <span style="color:var(--g300)">|</span> Australia <svg class="ic sm"><use href="#i-arrow-r"/></svg></div>
+</div>
+</div>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">3</span></span><b>My bag</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+<!-- C2 Account Hub destination -->
+<div class="device"><div class="cap"><b>C2 · Account Hub destination</b><br>A dedicated value surface reached from Home + Account</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><div class="ab-ic"><svg class="ic"><use href="#i-back"/></svg></div><span class="ttl">Account Hub</span></div>
+<div class="appscroll">
+<div class="sec"><div class="idcard"><div class="idrow"><div class="avatar">JR</div><div><div class="idname">James R.</div><div class="idtier">Beauty Newcomer · 120 pts</div></div><div class="ring"><i>40%</i></div></div>
+<div class="progress"><div class="plab"><span>Member</span><span>Level 1</span></div><div class="track"><div class="fill" style="width:22%"></div></div><div class="phint">Spend $234 more to unlock Level 1.</div></div></div></div>
+<div class="sec" style="padding-top:0"><div class="tiles">
+<div class="tile pink"><svg class="ic" style="color:var(--pink)"><use href="#i-gift"/></svg><div class="tt">Rewards</div><div class="ss">2 ready to redeem</div></div>
+<div class="tile"><svg class="ic"><use href="#i-sparkle"/></svg><div class="tt">Beauty Profile</div><div class="ss">40% complete</div></div>
+<div class="tile"><svg class="ic"><use href="#i-target"/></svg><div class="tt">Profile Fit</div><div class="ss">Your matches</div></div>
+<div class="tile"><svg class="ic"><use href="#i-receipt"/></svg><div class="tt">Purchases</div><div class="ss">12 orders</div></div>
+</div>
+<div class="acc"><div class="acc-h"><svg class="ic sm"><use href="#i-help"/></svg>What is the Account Hub?<svg class="ic ch"><use href="#i-chev-d"/></svg></div><div class="acc-b"><div class="acc-bi">One place for your membership, points, rewards and beauty profile — so the value you’ve earned is always easy to find and act on.</div></div></div>
+<div class="acc"><div class="acc-h"><svg class="ic sm"><use href="#i-info"/></svg>How we use your profile<svg class="ic ch"><use href="#i-chev-d"/></svg></div><div class="acc-b"><div class="acc-bi">Your skin type and preferences power “why this matches you” on product pages. You can edit or clear them anytime.</div></div></div>
+<div style="height:14px"></div></div>
+</div>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">3</span></span><b>My bag</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+</div></div>
+
+<!-- ============ OPTION D ============ -->
+<div class="optpane" data-opt="D">
+<div class="opthead"><span class="tag">Option D · newcomer header + activity wallet</span><h2>Loyalty home — newcomer header</h2><p>Option D keeps the B3 loyalty-home layout but swaps the purple hero for B1&rsquo;s <b>Beauty Newcomer</b> status pattern (tier + points + progress). The <b>Wallet</b> moves down into the activities grid — sitting under Purchases — and a new <b>Upcoming bookings</b> activity is added with a calendar icon.</p></div>
+<div class="rationale"><div><h4>What it optimises for</h4><p>A calmer, lighter entry that still leads with tier status and points.</p></div><div><h4>IA risk</h4><p>Low–moderate — reuses proven B1 + B3 patterns; wallet demoted to an activity.</p></div><div><h4>Watch-out</h4><p>Wallet is less prominent than in B3 — confirm that matches its usage.</p></div></div>
+<div class="stage">
+
+<!-- D0 Today — current experience -->
+<div class="device"><div class="cap"><b>Today · current experience</b><br>The live Account tab — a flat settings list with no membership, value or personalisation</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><span class="ttl">Account</span></div>
+<div class="appscroll">
+<div class="sec" style="padding-top:8px">
+<div class="list">
+<div class="lrow"><svg class="ic"><use href="#i-heart"/></svg><span class="lb">Wishlists</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-user"/></svg><span class="lb">Personal details</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-cal"/></svg><span class="lb">Bookings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-receipt"/></svg><span class="lb">Purchases</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-lock"/></svg><span class="lb">Change password</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-gear"/></svg><span class="lb">Settings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow noborder"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Contact us</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+</div>
+<div class="list" style="margin-top:14px"><div class="lrow"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Send app feedback</span></div><div class="lrow noborder"><svg class="ic"><use href="#i-arrow-r"/></svg><span class="lb">Sign out</span></div></div>
+<div class="footer">App version 2.61.0.694905 <span style="color:var(--g300)">|</span> Australia <svg class="ic sm"><use href="#i-arrow-r"/></svg></div>
+</div>
+</div>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">2</span></span><b>My bag</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div></div>
+<div class="notecard"><h5><svg class="ic"><use href="#i-info"/></svg>Why this falls short</h5>
+<ul>
+<li><b>No identity or membership.</b> Your tier, points and rewards are invisible — nothing says “you” at MECCA.</li>
+<li><b>Value is buried.</b> Beauty Loop status, points balance and vouchers aren’t surfaced, so there’s no reason to return.</li>
+<li><b>Flat, undifferentiated list.</b> Every row carries equal weight; nothing guides attention to what matters most.</li>
+<li><b>No personalisation.</b> Nothing reflects what you’ve bought or your beauty profile — no matches or recommendations.</li>
+<li><b>Feels like admin, not a destination.</b> Settings-first framing makes the screen purely transactional.</li>
+</ul>
+</div>
+</div>
+
+<!-- D1 Newcomer loyalty home -->
+<div class="device"><div class="cap"><b>D1 · Newcomer loyalty home</b><br>B1 Beauty Newcomer header · activities grid with Wallet + Upcoming bookings · Beauty Profile · Your Rewards</div>
+<div class="frame"><div class="screen"><div class="island"></div>
+<div class="notifpanel">
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><div class="ab-ic" data-close="notif"><svg class="ic"><use href="#i-back"/></svg></div><span class="ttl">Notifications</span><span class="sp"></span><div class="ab-ic" data-clear="notif"><svg class="ic"><use href="#i-check"/></svg></div></div>
+<div class="appscroll">
+<div class="nsec">Today</div>
+<div class="nitem unread"><div class="nicon pink"><svg class="ic"><use href="#i-gift"/></svg></div><div class="nbody"><div class="ntt">Your birthday gift is here</div><div class="nbd">A $10 voucher has landed in your rewards. Redeem it before 31 July.</div><div class="ntime">2h ago</div></div><span class="ndot"></span></div>
+<div class="nitem"><div class="nicon pink"><svg class="ic"><use href="#i-sparkle"/></svg></div><div class="nbody"><div class="ntt">A new match for your profile</div><div class="nbd">Victoria Beckham Foundation Drops — 86% fit for your skin type and coverage.</div><div class="ntime">5h ago</div></div></div>
+<div class="nsec">Earlier</div>
+<div class="nitem"><div class="nicon"><svg class="ic"><use href="#i-bag"/></svg></div><div class="nbody"><div class="ntt">Your order is on its way</div><div class="nbd">Order #10482 has shipped. Track it for live delivery updates.</div><div class="ntime">Yesterday</div></div></div>
+<div class="nitem"><div class="nicon"><svg class="ic"><use href="#i-cal"/></svg></div><div class="nbody"><div class="ntt">Booking reminder</div><div class="nbd">Your brow appointment is this Saturday at 2:00pm — MECCA Bourke St.</div><div class="ntime">3 days ago</div></div></div>
+<div style="height:20px"></div>
+</div>
+<span class="homebar"></span>
+</div>
+<div class="setpanel">
+<div class="statusbar"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="appbar"><div class="ab-ic" data-close="settings"><svg class="ic"><use href="#i-back"/></svg></div><span class="ttl">Account</span></div>
+<div class="appscroll">
+<div class="sec" style="padding-top:8px">
+<div class="list">
+<div class="lrow"><svg class="ic"><use href="#i-heart"/></svg><span class="lb">Wishlists</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-user"/></svg><span class="lb">Personal details</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-cal"/></svg><span class="lb">Bookings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-receipt"/></svg><span class="lb">Purchases</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-lock"/></svg><span class="lb">Change password</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow"><svg class="ic"><use href="#i-gear"/></svg><span class="lb">Settings</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+<div class="lrow noborder"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Contact us</span><svg class="ic ch"><use href="#i-chev-r"/></svg></div>
+</div>
+<div class="list" style="margin-top:14px"><div class="lrow"><svg class="ic"><use href="#i-mail"/></svg><span class="lb">Send app feedback</span></div><div class="lrow noborder"><svg class="ic"><use href="#i-arrow-r"/></svg><span class="lb">Sign out</span></div></div>
+<div class="footer">App version 2.61.0.694905 <span style="color:var(--g300)">|</span> Australia <svg class="ic sm"><use href="#i-arrow-r"/></svg></div>
+</div>
+</div>
+<div class="tabbar">
+<button class="tab"><span class="ti"><svg class="ic"><use href="#i-bag"/></svg><span class="bdg">2</span></span><b>My bag</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m">M</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-gift"/></svg><b>Beauty Loop</b></button>
+<button class="tab on"><svg class="ic"><use href="#i-user"/></svg><b>Account</b></button>
+</div>
+<span class="homebar"></span>
+</div>
+<div class="ikwrap">
+<div class="ikhero">
+<div class="statusbar light"><span>9:41</span><span class="sb-r"><svg class="ic-st"><use href="#i-signal"/></svg><svg class="ic-st"><use href="#i-wifi"/></svg><svg class="ic-bt"><use href="#i-battery"/></svg></span></div>
+<div class="ikhead"><div><div class="ikname">James</div><div class="ikmem">Beauty Loop member</div></div>
+<div class="ikactions"><div class="ikcirc" data-goto="settings"><svg class="ic"><use href="#i-gear"/></svg></div><div class="ikcirc" data-goto="notif"><svg class="ic"><use href="#i-bell"/></svg><span class="nbadge">1</span></div></div></div>
+<div class="iktiles">
+<div class="dnewcard" data-goto="loop"><div class="dnc-top"><div><div class="dnc-eyebrow">You are currently a</div><div class="dnc-tier">Beauty Newcomer</div></div><span class="dnc-pts">120 <span class="u">pts</span></span><svg class="ic pchev"><use href="#i-chev-r"/></svg></div>
+<div class="plab2"><span>Member</span><span>Level 1</span></div><div class="ptrack"><div class="pfill" style="width:22%"></div></div><div class="phint2">Spend $234 more to reach Level 1</div></div>
+</div>
+</div>
+<div class="iksheet">
+<div class="ikh2">Your activities</div>
+<div class="dacts">
+<div class="ikact"><div class="aic"><svg class="ic"><use href="#i-bag"/></svg></div><div class="alab">Purchases</div></div>
+<div class="ikact"><div class="aic"><svg class="ic" style="color:var(--red)"><use href="#i-heart"/></svg></div><div class="alab">Saved lists</div></div>
+<div class="ikact"><div class="aic"><span class="mm">M</span></div><div class="alab">Wallet</div></div>
+<div class="ikact"><div class="aic"><svg class="ic"><use href="#i-cal"/></svg></div><div class="alab">Upcoming bookings</div></div>
+</div>
+<div class="ikrowh"><h3>Beauty Profile</h3><span class="ikpct">60% complete</span></div>
+<div class="ikbigcard ikprofcard" style="background-image:url('https://contenthub-delivery.mecca.com/api/public/content/makeup-nav-tiles-march-26-complexion-1x1-C1jlyv4RdyjMOoqN9ITZA.webp')"><span class="pfcta">Complete your profile <svg class="ic"><use href="#i-chev-r"/></svg></span></div>
+<div class="ikrowh"><h3>Your Rewards</h3><span class="lnk" style="margin-left:auto">See all</span></div>
+<div class="rwlist">
+<div class="rwcard">
+<div class="rwthumb" style="background:#e6c3dd">
+<svg class="hrt" style="width:82px;height:82px;left:-18px;bottom:-16px;color:var(--red)"><use href="#i-heart"/></svg>
+<svg class="hrt" style="width:60px;height:60px;right:-12px;top:-10px;color:#d6b8e4"><use href="#i-heart"/></svg>
+<span class="rwlvl">Birthday</span>
+</div>
+<div class="rwbody"><div class="rt">Your birthday gift</div><div class="rd">A $10 voucher is waiting — treat yourself to something new this month.</div><span class="rl">Redeem now</span></div>
+</div>
+<div class="rwcard">
+<div class="rwthumb" style="background:#f4a08a">
+<svg class="hrt" style="width:84px;height:84px;left:6px;top:12px;color:var(--red)"><use href="#i-heart"/></svg>
+<svg class="hrt" style="width:46px;height:46px;right:-6px;bottom:-6px;color:#f6a8cc"><use href="#i-heart"/></svg>
+<span class="rwlvl">Sample</span>
+</div>
+<div class="rwbody"><div class="rt">Free deluxe sample</div><div class="rd">Add a complimentary deluxe sample to your next MECCA order.</div><span class="rl">Choose sample</span></div>
+</div>
+</div>
+<div style="height:24px"></div>
+</div>
+</div>
+<div class="tabbar">
+<button class="tab on"><svg class="ic"><use href="#i-home"/></svg><b>Home</b></button>
+<button class="tab"><svg class="ic"><use href="#i-search"/></svg><b>Shop</b></button>
+<button class="tab logo"><span class="m" style="font-size:12px;font-weight:700">JR</span><b>&nbsp;</b></button>
+<button class="tab"><svg class="ic"><use href="#i-grid"/></svg><b>Services</b></button>
+<button class="tab"><svg class="ic"><use href="#i-bag"/></svg><b>My bag</b></button>
+</div>
+<span class="homebar"></span>
+</div></div></div>
+
+</div></div>
+
+<div class="legend">Prototype · MECCA Account Hub concept · iPhone 15 Pro frame (393×852pt) · real MECCA tokens · line-icon set (no emoji) · black reserved for buttons &amp; controls. Interactive: segmented options, swipeable carousels, expandable accordions, toggleable chips / hearts / feedback.</div>
+</div>
+
+<script>
+(function(){
+/* segmented options */
+document.querySelectorAll('.seg').forEach(function(b){
+ b.addEventListener('click',function(){
+  var o=b.dataset.opt;
+  document.querySelectorAll('.seg').forEach(function(s){s.classList.toggle('on',s.dataset.opt===o);});
+  document.querySelectorAll('.optpane').forEach(function(p){p.classList.toggle('on',p.dataset.opt===o);});
+  document.querySelectorAll('.optpane.on .car').forEach(initDots);
+ });
+});
+/* carousels */
+function activeIndex(track,slides){var c=track.scrollLeft+track.clientWidth/2,best=0,bd=1e9;slides.forEach(function(s,i){var mid=s.offsetLeft+s.offsetWidth/2;var d=Math.abs(mid-c);if(d<bd){bd=d;best=i;}});return best;}
+function initDots(car){
+ var track=car.querySelector('.car-track');if(!track)return;
+ var slides=[].slice.call(track.children);
+ var dotsWrap=car.querySelector('.car-dots');if(!dotsWrap)return;
+ if(dotsWrap.dataset.built)return;dotsWrap.dataset.built='1';
+ var light=car.dataset.dots==='light';
+ slides.forEach(function(s,i){var d=document.createElement('button');d.className='dot'+(light?' light':'')+(i===0?' on':'');d.addEventListener('click',function(){track.scrollTo({left:s.offsetLeft-track.offsetLeft,behavior:'smooth'});});dotsWrap.appendChild(d);});
+ var dots=[].slice.call(dotsWrap.children);
+ var raf;track.addEventListener('scroll',function(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var a=activeIndex(track,slides);dots.forEach(function(d,i){d.classList.toggle('on',i===a);});});});
+}
+document.querySelectorAll('.car').forEach(initDots);
+/* accordions */
+document.addEventListener('click',function(e){
+ var h=e.target.closest('.acc-h');if(h){h.parentElement.classList.toggle('open');return;}
+ var ch=e.target.closest('.chip');if(ch){ch.classList.toggle('on');return;}
+ var hb=e.target.closest('.heart');if(hb){hb.classList.toggle('on');hb.style.color=hb.classList.contains('on')?'var(--red)':'';return;}
+ var cb=e.target.closest('.cbx');if(cb){cb.classList.toggle('on');return;}
+ var th=e.target.closest('.thumb');if(th){var p=th.parentElement;p.querySelectorAll('.thumb').forEach(function(t){t.classList.remove('on');});th.classList.add('on');return;}
+ var tb=e.target.closest('.tab');if(tb){var bar=tb.parentElement;bar.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});tb.classList.add('on');return;}
+});
+/* B3 — sticky purple header fades on scroll */
+document.querySelectorAll('.ikwrap').forEach(function(w){
+ var hero=w.querySelector('.ikhero');if(!hero)return;
+ w.addEventListener('scroll',function(){
+  var o=Math.max(0,Math.min(1,1-w.scrollTop/140));
+  hero.style.opacity=o;
+ },{passive:true});
+});
+/* points/tier card opens Beauty Loop (B1) — from B3 and Option D */
+document.querySelectorAll('[data-goto="loop"]').forEach(function(t){
+ t.addEventListener('click',function(){
+  var seg=document.querySelector('.seg[data-opt="B"]');
+  if(seg&&!seg.classList.contains('on'))seg.click();
+  var b1=document.querySelector('.optpane[data-opt="B"] .device');
+  if(b1)setTimeout(function(){b1.scrollIntoView({behavior:'smooth',block:'start'});},60);
+ });
+});
+/* bell opens Notifications screen (scoped to its own frame); back closes; check marks all read */
+document.querySelectorAll('[data-goto="notif"]').forEach(function(t){
+ t.addEventListener('click',function(){
+  var scr=t.closest('.screen');var p=scr&&scr.querySelector('.notifpanel');if(p)p.classList.add('on');
+ });
+});
+document.querySelectorAll('[data-close="notif"]').forEach(function(b){
+ b.addEventListener('click',function(){
+  var p=b.closest('.notifpanel');if(p)p.classList.remove('on');
+ });
+});
+document.querySelectorAll('[data-clear="notif"]').forEach(function(b){
+ b.addEventListener('click',function(){
+  var p=b.closest('.notifpanel');if(!p)return;
+  p.querySelectorAll('.nitem.unread').forEach(function(n){n.classList.remove('unread');var d=n.querySelector('.ndot');if(d)d.remove();});
+  var scr=p.closest('.screen');var badge=scr&&scr.querySelector('[data-goto="notif"] .nbadge');if(badge)badge.style.display='none';
+ });
+});
+/* gear opens Account settings screen (Option D); back closes */
+document.querySelectorAll('[data-goto="settings"]').forEach(function(t){
+ t.addEventListener('click',function(){
+  var scr=t.closest('.screen');var p=scr&&scr.querySelector('.setpanel');if(p)p.classList.add('on');
+ });
+});
+document.querySelectorAll('[data-close="settings"]').forEach(function(b){
+ b.addEventListener('click',function(){
+  var p=b.closest('.setpanel');if(p)p.classList.remove('on');
+ });
+});
+})();
+</script>
+</body>
+</html>
